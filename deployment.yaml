@@ -1,7 +1,7 @@
 # The gateway: the backend the browser talks to. It does the GitHub OAuth
 # login, keeps sessions in Postgres, checks the user may read the repository,
 # and forwards reviews to review-api inside the cluster. The browser reaches
-# it through the Ingress, on the SAME address as the UI (ingress/ingress.yaml).
+# it through the Ingress, on the SAME address as the UI (ingress/ingress.yaml in ai-scanner-backend-deployment).
 #
 # THE PUBLIC ADDRESS lives in this file only, in three env vars below:
 # GATEWAY_FRONTEND_URL, GATEWAY_CORS_ORIGINS and GITHUB_OAUTH_REDIRECT_URI.
@@ -12,12 +12,12 @@
 # Site admins (who may change the AI model in Settings) come from the
 # ConfigMap gateway-admins (gateway/admins-configmap.yaml), mounted as a file.
 #
-# Needs the Secret "gateway-secrets" (k8s/README.md, step 5). Until it exists
+# Needs the Secret "gateway-secrets" (ai-scanner-backend-deployment, DEPLOY-K3S.md B4). Until it exists
 # the Pod waits in CreateContainerConfigError; it starts on its own once the
 # Secret is created.
 #
-# Apply through the kustomization (kubectl apply -k k8s/): the image TAG is set
-# in k8s/kustomization.yaml.
+# Apply through ai-scanner-backend-deployment (kubectl apply -k . there): the
+# image TAG is set in that repository's kustomization.yaml.
 ---
 apiVersion: apps/v1                               # apps API group, where Deployment is defined
 kind: Deployment                                  # keeps N identical Pods running and replaces them on change
@@ -42,7 +42,7 @@ spec:                                             # desired state
           type: RuntimeDefault                    # the container runtime's default filter ("restricted" requires one)
       containers:                                 # the containers in the Pod
         - name: gateway                           # container name
-          image: review-gateway                   # image NAME only (built with: docker build -t review-gateway gateway/); the tag comes from kustomization.yaml
+          image: review-gateway                   # image NAME only (built from the ai-scanner-gateway repository); the tag comes from kustomization.yaml
           imagePullPolicy: IfNotPresent           # use the image already on the node (imported with k3s ctr); only pull if it is missing
           ports:                                  # ports the container listens on
             - containerPort: 8080                 # the gateway's port (uvicorn in review_gateway/app.py)
@@ -60,7 +60,7 @@ spec:                                             # desired state
             - name: GATEWAY_DATABASE_URL          # the session database connection string
               valueFrom:                          # read the value from somewhere else instead of writing it here
                 secretKeyRef:                     # from a Secret
-                  name: gateway-secrets           # created from the command line (k8s/README.md)
+                  name: gateway-secrets           # created from the command line (ai-scanner-backend-deployment, DEPLOY-K3S.md B4)
                   key: database-url               # must start with postgresql+psycopg:// (psycopg 3); plain postgresql:// crashes the Pod
             - name: GITHUB_WEBHOOK_SECRET         # verifies that webhook calls really come from GitHub
               valueFrom:                          # read the value from a Secret

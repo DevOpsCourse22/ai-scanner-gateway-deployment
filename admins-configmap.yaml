@@ -7,7 +7,7 @@
 # within about a minute. Change it with either:
 #
 #   kubectl -n ai-scan-repos edit configmap gateway-admins
-#   (or edit this file and run: kubectl apply -k Code-Review-MCP/k8s)
+#   (or edit this file and run kubectl apply -k . in ai-scanner-backend-deployment)
 #
 # Everyone not listed sees the AI model setting read-only.
 ---

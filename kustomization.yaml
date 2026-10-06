@@ -1,0 +1,19 @@
+# The gateway's Kubernetes objects, as one Kustomize unit.
+#
+# Normally applied TOGETHER with the rest of the app, from the
+# ai-scanner-backend-deployment repository cloned next to this one:
+#
+#   cd ai-scanner-backend-deployment && kubectl apply -k .
+#
+# That kustomization lists this folder (../ai-scanner-gateway-deployment) as
+# one of its resources and sets the image tag for review-gateway there, so
+# this file has no images: block of its own (one place to set every tag).
+#
+# Before the split this was Code-Review-MCP/k8s/gateway/ inside
+# hadsahar/DevSecOps-Final-Project.
+apiVersion: kustomize.config.k8s.io/v1beta1       # the Kustomize config format version
+kind: Kustomization                               # this file describes a set of manifests to apply together
+
+resources:                                        # the files that make up the gateway
+  - admins-configmap.yaml                         # ConfigMap gateway-admins: who may change site-wide settings (edit with kubectl, no restart)
+  - deployment.yaml                               # gateway Deployment and Service (reads the gateway-secrets Secret)
