@@ -1,13 +1,15 @@
-# The gateway's Kubernetes objects, as one Kustomize unit.
+# The gateway's Kubernetes objects, as one Kustomize unit, complete on its own.
 #
-# Normally applied TOGETHER with the rest of the app, from the
-# ai-scanner-backend-deployment repository cloned next to this one:
+#   kubectl kustomize .     print exactly what would be applied (changes nothing)
 #
-#   cd ai-scanner-backend-deployment && kubectl apply -k .
+# Deployed by the Argo CD Application "ai-scan-gateway", which points at this
+# repository (path ".", branch main). Argo CD clones ONE repository per
+# Application, so nothing here may refer to another repository (no ../).
+# Change the cluster by committing here; Argo CD applies the commit.
 #
-# That kustomization lists this folder (../ai-scanner-gateway-deployment) as
-# one of its resources and sets the image tag for review-gateway there, so
-# this file has no images: block of its own (one place to set every tag).
+# Needs, in the ai-scan-repos namespace, what other repositories provide:
+# the namespace itself and review-api (ai-scanner-backend-deployment), and
+# the Secret gateway-secrets (created from the command line, never in git).
 #
 # Before the split this was Code-Review-MCP/k8s/gateway/ inside
 # hadsahar/DevSecOps-Final-Project.
@@ -17,3 +19,7 @@ kind: Kustomization                               # this file describes a set of
 resources:                                        # the files that make up the gateway
   - admins-configmap.yaml                         # ConfigMap gateway-admins: who may change site-wide settings (edit with kubectl, no restart)
   - deployment.yaml                               # gateway Deployment and Service (reads the gateway-secrets Secret)
+
+images:                                           # rewrite image references in the manifests above
+  - name: review-gateway                          # every "image: review-gateway" ...
+    newTag: e74fbb1                               # ... becomes review-gateway:e74fbb1. The tag you built from ai-scanner-gateway and imported into K3s

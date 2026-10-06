@@ -16,8 +16,8 @@
 # the Pod waits in CreateContainerConfigError; it starts on its own once the
 # Secret is created.
 #
-# Apply through ai-scanner-backend-deployment (kubectl apply -k . there): the
-# image TAG is set in that repository's kustomization.yaml.
+# Apply with this repository's kustomization (Argo CD, or kubectl apply -k .):
+# the image TAG is set in its kustomization.yaml.
 ---
 apiVersion: apps/v1                               # apps API group, where Deployment is defined
 kind: Deployment                                  # keeps N identical Pods running and replaces them on change

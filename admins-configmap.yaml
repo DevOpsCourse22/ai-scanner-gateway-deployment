@@ -7,7 +7,7 @@
 # within about a minute. Change it with either:
 #
 #   kubectl -n ai-scan-repos edit configmap gateway-admins
-#   (or edit this file and run kubectl apply -k . in ai-scanner-backend-deployment)
+#   (or edit this file, commit and push: Argo CD applies it; without Argo CD, kubectl apply -k .)
 #
 # Everyone not listed sees the AI model setting read-only.
 ---
