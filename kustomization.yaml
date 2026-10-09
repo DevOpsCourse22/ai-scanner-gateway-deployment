@@ -22,4 +22,5 @@ resources:                                        # the files that make up the g
 
 images:                                           # rewrite image references in the manifests above
   - name: review-gateway                          # every "image: review-gateway" ...
-    newTag: e74fbb1                               # ... becomes review-gateway:e74fbb1. The tag you built from ai-scanner-gateway and imported into K3s
+    newName: 10.0.0.39:30500/review-gateway                    # set by Jenkins: the registry it was pushed to
+    newTag: 40233b8                               # set by Jenkins: the commit it was built from
